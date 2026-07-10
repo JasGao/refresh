@@ -1,0 +1,11 @@
+accounts/state.json
+accounts/state.lock
+accounts/accounts.json
+.env
+**/__pycache__/
+crawl/output/
+refresh-metadata-output/
+logs/
+scripts/schedule.local.env
+tokens.csv.bak
+tokens.csv.tmp
