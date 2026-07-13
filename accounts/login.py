@@ -1,6 +1,8 @@
 import argparse
 import json
 import os
+import re
+import subprocess
 import sys
 import time
 
@@ -53,25 +55,56 @@ def chrome_options():
     return options
 
 
+def detect_chrome_version():
+    for path in (
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    ):
+        if not os.path.exists(path):
+            continue
+        try:
+            output = subprocess.check_output(
+                [path, "--version"],
+                text=True,
+                stderr=subprocess.STDOUT,
+            )
+            match = re.search(r"(\d+)\.", output)
+            if match:
+                return int(match.group(1))
+        except (OSError, subprocess.SubprocessError):
+            continue
+    return None
+
+
+def chrome_version_main():
+    version = os.environ.get("BSCSCAN_CHROME_VERSION", "").strip()
+    if version:
+        return int(version)
+    detected = detect_chrome_version()
+    return detected
+
+
 def create_driver():
-    options = chrome_options()
-    version = os.environ.get("BSCSCAN_CHROME_VERSION", "149").strip()
+    version_main = chrome_version_main()
     last_error = None
 
     if CHROME_USER_DATA:
         info(f"Chrome profile  {CHROME_USER_DATA}  ({CHROME_PROFILE})")
+    if version_main:
+        info(f"Chrome version_main  {version_main}")
 
     for attempt in range(1, DRIVER_RETRIES + 1):
+        options = chrome_options()
         try:
-            if version:
-                driver = uc.Chrome(options=options, version_main=int(version))
+            if version_main:
+                driver = uc.Chrome(options=options, version_main=version_main)
             else:
                 driver = uc.Chrome(options=options)
             driver.get("about:blank")
             driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
             driver.set_script_timeout(30)
             return driver
-        except (TimeoutError, OSError, WebDriverException) as error:
+        except (TimeoutError, OSError, RuntimeError, WebDriverException) as error:
             last_error = error
             if attempt < DRIVER_RETRIES:
                 print(f"Chrome driver init failed (attempt {attempt}/{DRIVER_RETRIES}): {error}")

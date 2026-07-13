@@ -74,6 +74,10 @@ $prog_args
         <string>$REPO_DIR</string>
         <key>REFRESH_PYTHON</key>
         <string>$PYTHON_BIN</string>
+        <key>HOME</key>
+        <string>$HOME</string>
+        <key>USER</key>
+        <string>${USER:-$(whoami)}</string>
     </dict>
     <key>StartCalendarInterval</key>
     <dict>

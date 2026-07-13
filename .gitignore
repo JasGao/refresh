@@ -5,7 +5,8 @@ accounts/accounts.json
 **/__pycache__/
 crawl/output/
 refresh-metadata-output/
-logs/
+logs/*
+!logs/daily-*.log
 scripts/schedule.local.env
 tokens.csv.bak
 tokens.csv.tmp

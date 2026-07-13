@@ -59,6 +59,8 @@ scripts/uninstall_schedule.sh              # remove schedule
 
 **Mac must stay awake, logged in, and unlocked** at run time. Use Amphetamine with **“Allow system sleep when display is closed” unchecked** if you close the lid. Prefer AC power.
 
+After each scheduled run, `scripts/run_daily.sh` commits and pushes the new `logs/daily-*.log` to the remote repo. Set `REFRESH_GIT_PUSH=0` in `scripts/schedule.local.env` to disable.
+
 Optional overrides: create `scripts/schedule.local.env` (gitignored), e.g. `BSCSCAN_ACCOUNT=refresh1`.
 
 ---

@@ -16,6 +16,30 @@ PYTHON_BIN="${REFRESH_PYTHON:-python3}"
 # launchd starts jobs with a minimal PATH; add the usual Homebrew/system
 # locations so python3, chromedriver, etc. resolve.
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
+export HOME="${HOME:-$(/usr/bin/whoami | xargs -I{} /bin/sh -c 'eval echo ~{}')}"
+export USER="${USER:-$(/usr/bin/whoami)}"
+
+wait_for_network() {
+  local max_wait="${REFRESH_NETWORK_WAIT:-90}"
+  local waited=0
+  while [ "$waited" -lt "$max_wait" ]; do
+    if /usr/bin/host docs.google.com >/dev/null 2>&1 && /usr/bin/host github.com >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 5
+    waited=$((waited + 5))
+  done
+  echo "WARNING: DNS not ready after ${max_wait}s — continuing anyway"
+  return 1
+}
+
+setup_git_ssh() {
+  local key="${HOME}/.ssh/id_ed25519"
+  if [ ! -f "$key" ]; then
+    return 0
+  fi
+  export GIT_SSH_COMMAND="ssh -i ${key} -o IdentitiesOnly=yes -o UserKnownHostsFile=${HOME}/.ssh/known_hosts"
+}
 
 # Unattended defaults (see README "OpenClaw / unattended cron"). Any value
 # already set in the environment or scripts/schedule.local.env wins.
@@ -38,6 +62,10 @@ LOG="$REPO_DIR/logs/daily-$(date +%Y%m%d-%H%M%S).log"
 
 cd "$REPO_DIR" || { echo "cannot cd to $REPO_DIR"; exit 1; }
 
+wait_for_network || true
+setup_git_ssh
+
+code=0
 {
   echo "=== refresh daily run: $(date) ==="
   echo "repo=$REPO_DIR"
@@ -46,5 +74,11 @@ cd "$REPO_DIR" || { echo "cannot cd to $REPO_DIR"; exit 1; }
   "$PYTHON_BIN" run_workflow.py "$@"
   code=$?
   echo "=== exit $code at $(date) ==="
-  exit $code
 } >>"$LOG" 2>&1
+
+{
+  echo "=== git push log: $(date) ==="
+  bash "$REPO_DIR/scripts/push_daily_log.sh" "$REPO_DIR" "$LOG" "$code"
+} >>"$LOG" 2>&1
+
+exit $code
