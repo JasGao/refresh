@@ -1,0 +1,139 @@
+=== refresh daily run: Wed Jul 22 18:30:00 HKT 2026 ===
+repo=/Users/admin/refresh-metadata/refresh-metadata-tool
+python=/usr/bin/python3 (Python 3.9.6)
+args=<full pipeline>
+/Users/admin/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+
+══════════════════════════════════════════════════
+  BscScan Metadata Workflow
+══════════════════════════════════════════════════
+
+── Step 1: Update tokens.csv from Google Sheet ─────
+
+  ▸ Fetch shared token sheet (CSV export)
+  ✓ Pulled 3 token ids from sheet 1OgtsuOP2eKQays_mWAzVK2eRoQKP1QYVRsquGOafH7w (gid=0)
+
+── Run inputs ──────────────────────────
+  Tokens in CSV      3
+
+── Step 2: Ensure starting crawl cookie (account 1) 
+  Account pool       refresh1
+  ✓ Cookies still valid today: refresh1
+
+── Step 3: Reset compare output files ──────────────
+  ✓ Progress reset: progress.json
+  ✓ Report reset:   report.json
+
+── Step 4: Crawl — compare BscScan vs on-chain metadata 
+
+  ▸ crawl/compare.py
+/Users/admin/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+
+══════════════════════════════════════════════════
+  Crawl — BscScan vs on-chain metadata
+══════════════════════════════════════════════════
+  Account pool       refresh1, refresh2, refresh3, refresh4, refresh5, refresh6, refresh7, refresh8, refresh9, refresh10, refresh11, refresh12, refresh13, refresh14, refresh15, refresh16, refresh17, refresh18, refresh19, refresh20
+  Active account     refresh1
+
+── Run config ──────────────────────────
+  Total tokens       3
+  Already done       0
+  Remaining          3
+  Concurrency        10
+  RPC                https://bsc-dataseed.binance.org
+  ✓ …0500411226  in_sync
+  ✓ …5028146446  in_sync
+  ⚠ …1044259392  out_of_sync (5 diffs)
+  · Batch done — 3/3 tokens
+
+── Crawl results ───────────────────────
+  in_sync            2
+  out_of_sync        1
+  errors             0
+  Progress file      progress.json
+  Report file        report.json
+  Report contents    1 out_of_sync, 0 errors
+
+── Step 5: Refresh out-of-sync + crawl-error tokens (Selenium) 
+  Out-of-sync        1
+  To refresh         1
+  Accounts needed    1
+  Account pool       refresh6,refresh7,refresh8,refresh9,refresh10,refresh11,refresh12,refresh13,refresh14,refresh15,refresh16,refresh17,refresh18,refresh19,refresh20
+
+  ▸ refresh-metadata/refresh.py
+/Users/admin/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+
+══════════════════════════════════════════════════
+  Refresh — Selenium
+══════════════════════════════════════════════════
+
+── Run config ──────────────────────────
+  Source             report.json
+  Out-of-sync        1
+  Tokens             1
+  Limit per account  100 tokens
+  Delay              5.0s between tokens
+  Account pool       refresh6, refresh7, refresh8, refresh9, refresh10, refresh11, refresh12, refresh13, refresh14, refresh15, refresh16, refresh17, refresh18, refresh19, refresh20
+  Active account     refresh6
+
+── Refresh quota (today) ───────────────
+  refresh6           42/100 left (used 58, since 2026-07-22T08:46:58Z)
+  refresh7           61/100 left (used 39, since 2026-07-22T09:20:35Z)
+  refresh8           80/100 left (used 20, since 2026-07-22T09:32:52Z)
+  refresh9           100/100 left (used 0, since not started)
+  refresh10          100/100 left (used 0, since not started)
+  refresh11          100/100 left (used 0, since not started)
+  refresh12          100/100 left (used 0, since not started)
+  refresh13          100/100 left (used 0, since not started)
+  refresh14          100/100 left (used 0, since not started)
+  refresh15          100/100 left (used 0, since not started)
+  refresh16          100/100 left (used 0, since not started)
+  refresh17          100/100 left (used 0, since not started)
+  refresh18          100/100 left (used 0, since not started)
+  refresh19          100/100 left (used 0, since not started)
+  refresh20          100/100 left (used 0, since not started)
+  · Reusing today's session  refresh6  (42/100 left, started 2026-07-22T08:46:58Z)
+  · Chrome profile  /Users/admin/.refresh/chrome-bscscan/profiles/refresh6  (Default)
+  · Chrome version_main  150
+  · Trying saved cookies for refresh6 before Selenium login
+  ⚠ Could not verify logged-in username (expected refresh6)
+  ⚠ Saved cookies did not restore session for refresh6
+  ⚠ Saved session expired for refresh6 — restoring login
+  · Chrome profile  /Users/admin/.refresh/chrome-bscscan/profiles/refresh6  (Default)
+  · Chrome version_main  150
+  · Checking Chrome profile session for refresh6
+  · Trying saved cookies for refresh6 before Selenium login
+  ⚠ Could not verify logged-in username (expected refresh6)
+  ⚠ Saved cookies did not restore session for refresh6
+  ⚠ Saved session unavailable for refresh6 — full login required
+  · Logging in  refresh6
+  · Step 1/3  Selenium login  refresh6
+  · Login attempt 1/5  refresh6
+  · Login page open  https://bscscan.com/login
+  ✓ Filled username/password for refresh6
+  · Waiting for Turnstile (complete captcha in browser if shown)...
+  ✓ Turnstile completed
+  · Clicking LOGIN...
+  ✓ Logged in as refresh6
+  ✓ Login successful  refresh6
+  · Step 2/3  Open first token NFT page  …1044259392
+  ·            https://bscscan.com/nft/0xF8646A3Ca093e97Bb404c3b25e675C0394DD5b30/101718868962575549710705836355008276971710852909794801793966535084071044259392
+  ✓ NFT page loaded  …1044259392
+  ✓ Session ready  refresh6  (42/100 left, started 2026-07-22T08:46:58Z)
+  · Refreshing …1044259392  (1/1)  (account: refresh6)
+  ✓ …1044259392  refresh clicked
+  Quota              41/100 remaining for refresh6
+
+── Refresh results ─────────────────────
+  Succeeded          1
+  Failed             0
+  Total              1
+
+══════════════════════════════════════════════════
+  Workflow complete
+══════════════════════════════════════════════════
+=== exit 0 at Wed Jul 22 18:31:18 HKT 2026 ===
+=== git push log: Wed Jul 22 18:31:18 HKT 2026 ===
